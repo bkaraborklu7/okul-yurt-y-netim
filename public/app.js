@@ -257,15 +257,16 @@ async function loadCafeteriaLog() {
 
         // Sütun 1: Ad Soyad
         row.insertCell(1).innerText = e.isim || e.ad;
+        row.insertCell(2).innerText = e.sinif || "-";
 
         // Sütun 2: Giriş Saati (Yeşil tonuyla)
-        const cellGiris = row.insertCell(2);
+        const cellGiris = row.insertCell(3);
         cellGiris.innerText = e.girisSaati || e.saat || "--:--";
         cellGiris.style.color = "#27ae60";
         cellGiris.style.fontWeight = "bold";
 
         // Sütun 3: Çıkış Saati (Kırmızı tonuyla)
-        const cellCikis = row.insertCell(3);
+        const cellCikis = row.insertCell(4);
         cellCikis.innerText = e.cikisSaati || "--:--";
         cellCikis.style.color = "#e74c3c";
         cellCikis.style.fontWeight = "bold";
