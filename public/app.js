@@ -214,27 +214,27 @@ async function loadCafeteriaLog() {
  */
 async function loadEtutLog() {
     const records = await apiRequest('etut-listesi');
-    if (!records) {
-        alert("Veriler yüklenirken bir hata oluştu.");
-        return;
-    }
+    if (!records) return;
 
-    // Tarih seçiciden değeri al (YYYY-MM-DD gelir)
     const secilenTarihRaw = document.getElementById("etutTarihSecici").value;
+    if (!secilenTarihRaw) return;
 
-    if (!secilenTarihRaw) {
-        alert("⚠️ Lütfen bir tarih seçin!");
-        return;
-    }
-
-    // Seçilen tarihi DD.MM.YYYY formatına çevir (Backend ile eşleşmesi için)
+    // 1. Format Dönüştürme (Çok Kritik!)
+    // Seçici: 2024-01-07 -> Backend: 07.01.2024
     const [y, m, d] = secilenTarihRaw.split('-');
     const formatliTarih = `${d}.${m}.${y}`;
 
-    // Filtreleme: Sadece seçilen tarihteki kayıtları göster
-    const filtrelenmişKayitlar = records.filter(e => e.tarih === formatliTarih);
+    console.log("Seçilen (Formatlı):", formatliTarih);
+    console.log("Backend'den Gelen İlk Kayıt Tarihi:", records[0]?.tarih);
 
-    const html = filtrelenmişKayitlar.map(e => `
+    // 2. Filtreleme
+    const filtrelenmisKayitlar = records.filter(e => {
+        // Hem boşlukları temizleyelim hem de tam eşleşme arayalım
+        return e.tarih && e.tarih.trim() === formatliTarih;
+    });
+
+    // 3. Ekrana Basma
+    const html = filtrelenmisKayitlar.map(e => `
         <tr>
             <td>${e.tarih}</td>
             <td>${e.ad}</td>
@@ -244,10 +244,7 @@ async function loadEtutLog() {
     `).join('');
 
     document.getElementById("etutLogGövdesi").innerHTML =
-        html || `<tr><td colspan="4" style="text-align:center;">${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
-    if (filtrelenmisKayitlar.length > 0) {
-        console.log(`${formatliTarih} verileri listelendi.`);
-    }
+        html || `<tr><td colspan="4" style="text-align:center; color:red;">🚫 ${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
 }
 
 /**
