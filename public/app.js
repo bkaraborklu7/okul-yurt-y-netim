@@ -212,41 +212,63 @@ async function loadCafeteriaLog() {
 /**
  * Etüt Giriş Kayıtlarını (Loglarını) Getirir
  */
+// Etüt kayıtlarını geçmişe dönük sorgulama fonksiyonu
 async function loadEtutLog() {
-    const records = await apiRequest('etut-listesi');
-    if (!records) return;
+    console.log("Etüt sorgulama başlatıldı...");
 
-    const secilenTarihRaw = document.getElementById("etutTarihSecici").value;
-    if (!secilenTarihRaw) return;
+    // HTML'deki kutudan tarihi al
+    const tarihKutusu = document.getElementById("etutTarihSecici");
+    const tabloGovdesi = document.getElementById("etutLogGövdesi"); // HTML'deki 'ö' harfine dikkat
 
-    // 1. Format Dönüştürme (Çok Kritik!)
-    // Seçici: 2024-01-07 -> Backend: 07.01.2024
+    if (!tarihKutusu || !tabloGovdesi) {
+        console.error("HTML elemanları bulunamadı! ID'leri kontrol edin.");
+        return;
+    }
+
+    const secilenTarihRaw = tarihKutusu.value; // Örn: 2024-01-07
+    if (!secilenTarihRaw) {
+        alert("Lütfen bir tarih seçin!");
+        return;
+    }
+
+    // Tarihi backend formatına çevir (2024-01-07 -> 07.01.2024)
     const [y, m, d] = secilenTarihRaw.split('-');
     const formatliTarih = `${d}.${m}.${y}`;
 
-    console.log("Seçilen (Formatlı):", formatliTarih);
-    console.log("Backend'den Gelen İlk Kayıt Tarihi:", records[0]?.tarih);
+    // Backend'den verileri çek
+    const records = await apiRequest('etut-listesi');
 
-    // 2. Filtreleme
-    const filtrelenmisKayitlar = records.filter(e => {
-        // Hem boşlukları temizleyelim hem de tam eşleşme arayalım
-        return e.tarih && e.tarih.trim() === formatliTarih;
-    });
+    if (!records) {
+        tabloGovdesi.innerHTML = `<tr><td colspan="4" style="text-align:center; color:orange;">Veri alınamadı veya liste boş.</td></tr>`;
+        return;
+    }
 
-    // 3. Ekrana Basma
-    const html = filtrelenmisKayitlar.map(e => `
-        <tr>
-            <td>${e.tarih}</td>
-            <td>${e.ad}</td>
-            <td>${e.sinif}</td>
-            <td>${e.saat}</td>
-        </tr>
-    `).join('');
+    // Seçilen tarihe göre filtrele
+    const filtrelenmis = records.filter(e => e.tarih === formatliTarih);
 
-    document.getElementById("etutLogGövdesi").innerHTML =
-        html || `<tr><td colspan="4" style="text-align:center; color:red;">🚫 ${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
+    // Tabloyu oluştur
+    if (filtrelenmis.length > 0) {
+        tabloGovdesi.innerHTML = filtrelenmis.map(e => `
+            <tr>
+                <td>${e.tarih}</td>
+                <td>${e.ad}</td>
+                <td>${e.sinif}</td>
+                <td>${e.saat}</td>
+            </tr>
+        `).join('');
+    } else {
+        tabloGovdesi.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">🚫 ${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
+    }
 }
 
+function tarihiBugunYap() {
+    const today = new Date().toISOString().split('T')[0]; // 2024-01-07 formatı
+    const tarihKutusu = document.getElementById("etutTarihSecici");
+    if (tarihKutusu) {
+        tarihKutusu.value = today;
+        loadEtutLog(); // Tarihi set edince otomatik sorgula
+    }
+}
 /**
  * Kayıt ve Silme İşlemleri
  */
