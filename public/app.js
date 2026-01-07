@@ -301,16 +301,18 @@ async function izinTalepleriniYukle() {
         const badgeClass = t.durum === 'BEKLIYOR' ? 'badge-İzinli' : (t.durum === 'ONAYLANDI' ? 'yurtta' : 'disarida');
 
         row.innerHTML = `
-            <td>${t.isim}</td>
-            <td>${t.tur}</td>
-            <td>${t.tarih}</td>
-            <td>${t.aciklama}</td>
+            <td>${t.isim || "-"}</td>
+            <td>${t.tur || "-"}</td>
+            <td>${t.tarih || "-"}</td>
+            <td>${t.aciklama || "-"}</td>
             <td><span class="badge ${badgeClass}">${t.durum}</span></td>
             <td>
                 ${t.durum === 'BEKLIYOR' ?
-                `<button class="btn-s" onclick="izinIslem('${t.id}', 'ONAY')">✅</button>
-                     <button class="btn-s" onclick="izinIslem('${t.id}', 'RED')">❌</button>`
-                : 'Tamamlandı'}
+                `<div style="display: flex; gap: 5px;">
+                    <button class="btn-s" onclick="izinIslem('${t.id}', 'ONAY')">✅</button>
+                    <button class="btn-s" onclick="izinIslem('${t.id}', 'RED')">❌</button>
+                </div>`
+                : '<span style="color: gray;">Tamamlandı</span>'}
             </td>
         `;
     });
@@ -409,7 +411,19 @@ async function izinliNumaraSil(id) {
         kayitIzinleriniGetir();
     }
 }
+async function izinIslem(id, islem) {
+    if (!confirm('Bu izin talebi üzerinde işlem yapmak istediğinize emin misiniz?')) return;
 
+    // Backend'e onay veya red gönderiyoruz
+    const sonuc = await apiRequest('izin-onay', 'POST', { id, islem });
+
+    if (sonuc && sonuc.basarili) {
+        alert('İşlem başarıyla kaydedildi.');
+        izinTalepleriniYukle(); // Tabloyu yenile
+    } else {
+        alert('Hata: ' + (sonuc ? sonuc.mesaj : 'Sunucuya ulaşılamadı.'));
+    }
+}
 /**
  * Çıkış ve Yardımcı İşlemler
  */
