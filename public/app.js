@@ -277,7 +277,6 @@ function yemekTarihiBugunYap() {
 
         tarihKutusu.value = `${yil}-${ay}-${gun}`;
 
-        // Tarihi değiştirdikten sonra listeyi otomatik yükle
         loadCafeteriaLog();
     }
 }
