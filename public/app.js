@@ -222,11 +222,13 @@ async function loadCafeteriaLog() {
     const tarihKutusu = document.getElementById("yemekTarihSecici");
     const tabloGovdesi = document.getElementById("yemekhaneTabloGovdesi");
 
+    // Güvenlik kontrolü
     if (!tarihKutusu?.value || !tabloGovdesi) return;
 
     const records = await apiRequest('yemekhane-listesi');
     if (!records) return;
 
+    // Tarih formatla (2026-01-07 -> 07.01.2026)
     const [y, m, d] = tarihKutusu.value.split('-');
     const formatliTarih = `${d}.${m}.${y}`;
 
@@ -236,17 +238,48 @@ async function loadCafeteriaLog() {
     tabloGovdesi.innerHTML = "";
 
     if (filtrelenmis.length === 0) {
-        tabloGovdesi.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">Kayıt bulunamadı.</td></tr>`;
+        // Sütun sayısı 4'e çıktığı için colspan="4" yaptık
+        tabloGovdesi.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">🚫 ${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
         return;
     }
 
-    // Sadece veriyi işle
+    // Veriyi işle ve tabloya ekle
     filtrelenmis.forEach(e => {
         const row = tabloGovdesi.insertRow();
+
+        // Sütun 0: Tarih
         row.insertCell(0).innerText = e.tarih;
+
+        // Sütun 1: Ad Soyad
         row.insertCell(1).innerText = e.isim || e.ad;
-        row.insertCell(2).innerText = e.girisSaati || e.saat;
+
+        // Sütun 2: Giriş Saati (Yeşil tonuyla)
+        const cellGiris = row.insertCell(2);
+        cellGiris.innerText = e.girisSaati || e.saat || "--:--";
+        cellGiris.style.color = "#27ae60";
+        cellGiris.style.fontWeight = "bold";
+
+        // Sütun 3: Çıkış Saati (Kırmızı tonuyla)
+        const cellCikis = row.insertCell(3);
+        cellCikis.innerText = e.cikisSaati || "--:--";
+        cellCikis.style.color = "#e74c3c";
+        cellCikis.style.fontWeight = "bold";
     });
+}
+function yemekTarihiBugunYap() {
+    const tarihKutusu = document.getElementById("yemekTarihSecici");
+    if (tarihKutusu) {
+        const simdi = new Date();
+        // Input Date "YYYY-MM-DD" formatı bekler
+        const yil = simdi.getFullYear();
+        const ay = String(simdi.getMonth() + 1).padStart(2, '0');
+        const gun = String(simdi.getDate()).padStart(2, '0');
+
+        tarihKutusu.value = `${yil}-${ay}-${gun}`;
+
+        // Tarihi değiştirdikten sonra listeyi otomatik yükle
+        loadCafeteriaLog();
+    }
 }
 
 async function izinTalepleriniYukle() {
@@ -278,14 +311,6 @@ async function izinTalepleriniYukle() {
     });
 }
 
-function yemekTarihiBugunYap() {
-    const today = new Date().toISOString().split('T')[0];
-    const kutu = document.getElementById("yemekTarihSecici");
-    if (kutu) {
-        kutu.value = today;
-        loadYemekLog();
-    }
-}
 /**
  * Etüt Giriş Kayıtlarını (Loglarını) Getirir
  */
