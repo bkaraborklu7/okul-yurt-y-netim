@@ -19,6 +19,13 @@ const apiRequest = async (endpoint, options = {}) => {
         return null;
     }
 };
+// 1. Yardımcı Fonksiyon: Tarih seçiciyi bugüne ayarlar
+function tarihiBugunYap() {
+    const picker = document.getElementById("etutTarihSecici");
+    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD formatı
+    picker.value = today;
+    loadEtutLog();
+}
 // Bugünün tarihini DD.MM.YYYY formatında döndürür
 const getBugun = () => new Date().toLocaleDateString('tr-TR');
 
@@ -205,16 +212,26 @@ async function loadCafeteriaLog() {
  * Etüt Giriş Kayıtlarını (Loglarını) Getirir
  */
 async function loadEtutLog() {
-    // Backend'de yemekhane-listesi gibi bir etut-listesi endpoint'i olduğunu varsayıyoruz
     const records = await apiRequest('etut-listesi');
     if (!records) return;
 
-    const bugun = getBugun(); // Daha önce eklediğimiz tarih fonksiyonu
+    // Tarih seçiciden değeri al (YYYY-MM-DD gelir)
+    const secilenTarihRaw = document.getElementById("etutTarihSecici").value;
 
-    // Sadece bugünkü etüt girişlerini filtrele
-    const bugunkuKayitlar = records.filter(e => e.tarih === bugun);
+    // Eğer tarih seçilmediyse bugünü kullan
+    if (!secilenTarihRaw) {
+        tarihiBugunYap();
+        return;
+    }
 
-    const html = bugunkuKayitlar.map(e => `
+    // Seçilen tarihi DD.MM.YYYY formatına çevir (Backend ile eşleşmesi için)
+    const [y, m, d] = secilenTarihRaw.split('-');
+    const formatliTarih = `${d}.${m}.${y}`;
+
+    // Filtreleme: Sadece seçilen tarihteki kayıtları göster
+    const filtrelenmişKayitlar = records.filter(e => e.tarih === formatliTarih);
+
+    const html = filtrelenmişKayitlar.map(e => `
         <tr>
             <td>${e.tarih}</td>
             <td>${e.ad}</td>
@@ -223,11 +240,8 @@ async function loadEtutLog() {
         </tr>
     `).join('');
 
-    // Bu tabloyu index.html'de oluşturacağın bir ID'ye basacağız
-    const container = document.getElementById("etutLogGövdesi");
-    if (container) {
-        container.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">Bugün henüz etüt girişi yok.</td></tr>';
-    }
+    document.getElementById("etutLogGövdesi").innerHTML =
+        html || `<tr><td colspan="4" style="text-align:center;">${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
 }
 
 /**
