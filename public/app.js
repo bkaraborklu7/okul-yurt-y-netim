@@ -109,21 +109,6 @@ async function etutSifirla() {
         }
     }
 }
-
-/**
- * Yemekhane Takip Listesini Sıfırla
- */
-async function yemekhaneSifirla() {
-    if (confirm("Yemekhane giriş listesini temizlemek üzeresiniz. Onaylıyor musunuz?")) {
-        const res = await apiRequest('yemekhane-sifirla', { method: 'POST' });
-        if (res) {
-            alert("✅ Yemekhane listesi temizlendi.");
-            loadCafeteriaLog(); // Tabloyu güncelle
-        } else {
-            alert("❌ İşlem sırasında bir hata oluştu.");
-        }
-    }
-}
 /**
  * Nöbetçi Listesi Getirme ve Tabloyu İnşa Etme
  */
