@@ -318,7 +318,7 @@ async function kayitIzinleriniGetir() {
             <td><button class="btn btn-red" onclick="izinliNumaraSil('${n.id}')">Sil</button></td>
         </tr>
     `).join('');
-    document.getElementById("izinliNumaralarTablosu").innerHTML = h;
+    document.getElementById("izinliNumaralarTablosu").innerHTML = html;
 }
 
 async function izinliNumaraEkle() {
@@ -358,3 +358,4 @@ function cikisYap() {
 
 // 5 Saniyede bir verileri tazele
 setInterval(verileriYenile, 5000);
+
