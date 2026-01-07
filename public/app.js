@@ -77,6 +77,7 @@ function sekmeAc(id) {
     // Sekmeye özel veri çekme işlemleri
     if (id === 'belletmen') belletmenleriGetir();
     if (id === 'kayit') kayitIzinleriniGetir();
+    if (id === 'izinler') izinTalepleriniYükle();
 
     verileriYenile();
 }
@@ -219,31 +220,62 @@ async function loadActivityLog() {
 
 async function loadCafeteriaLog() {
     const tarihKutusu = document.getElementById("yemekTarihSecici");
-    const tabloGovdesi = document.getElementById("yemekhaneTabloGövdesi");
+    const tabloGovdesi = document.getElementById("yemekhaneTabloGovdesi");
 
-    if (!tarihKutusu || !tabloGovdesi || !tarihKutusu.value) return;
+    if (!tarihKutusu?.value || !tabloGovdesi) return;
 
-    // Backend'den yemekhane listesini çek (backend'de bu endpoint olmalı)
     const records = await apiRequest('yemekhane-listesi');
     if (!records) return;
 
-    // Tarih formatla (2026-01-07 -> 07.01.2026)
     const [y, m, d] = tarihKutusu.value.split('-');
     const formatliTarih = `${d}.${m}.${y}`;
 
     const filtrelenmis = records.filter(e => e.tarih === formatliTarih);
 
-    if (filtrelenmis.length > 0) {
-        tabloGovdesi.innerHTML = filtrelenmis.map(e => `
-            <tr>
-                <td>${e.tarih}</td>
-                <td>${e.ad}</td>
-                <td>${e.saat}</td>
-            </tr>
-        `).join('');
-    } else {
-        tabloGovdesi.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">🚫 ${formatliTarih} tarihinde yemek kaydı bulunamadı.</td></tr>`;
+    // Tabloyu temizle
+    tabloGovdesi.innerHTML = "";
+
+    if (filtrelenmis.length === 0) {
+        tabloGovdesi.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">Kayıt bulunamadı.</td></tr>`;
+        return;
     }
+
+    // Sadece veriyi işle
+    filtrelenmis.forEach(e => {
+        const row = tabloGovdesi.insertRow();
+        row.insertCell(0).innerText = e.tarih;
+        row.insertCell(1).innerText = e.isim || e.ad;
+        row.insertCell(2).innerText = e.girisSaati || e.saat;
+    });
+}
+
+async function izinTalepleriniYukle() {
+    const talepler = await apiRequest('izin-talepleri');
+    const tablo = document.getElementById("izinTalepleriTablosu");
+    if (!talepler || !tablo) return;
+
+    tablo.innerHTML = ""; // Önce temizle
+
+    talepler.reverse().forEach(t => {
+        const row = tablo.insertRow();
+
+        // Badge rengini belirle
+        const badgeClass = t.durum === 'BEKLIYOR' ? 'badge-orange' : (t.durum === 'ONAYLANDI' ? 'badge-green' : 'badge-red');
+
+        row.innerHTML = `
+            <td>${t.isim}</td>
+            <td>${t.tur}</td>
+            <td>${t.tarih}</td>
+            <td>${t.aciklama}</td>
+            <td><span class="badge ${badgeClass}">${t.durum}</span></td>
+            <td>
+                ${t.durum === 'BEKLIYOR' ?
+                `<button class="btn-s" onclick="izinIslem('${t.id}', 'ONAY')">✅</button>
+                     <button class="btn-s" onclick="izinIslem('${t.id}', 'RED')">❌</button>`
+                : 'Tamamlandı'}
+            </td>
+        `;
+    });
 }
 
 function yemekTarihiBugunYap() {
