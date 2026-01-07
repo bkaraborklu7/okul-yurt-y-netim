@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yurt Yönetim Paneli - Tam Entegre Sistem</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div id="sidebar">
+        <div class="sidebar-header">🏫 YURT PANELİ</div>
+        <div onclick="sekmeAc('dashboard')" id="m-dashboard" class="menu-item active">📊 Canlı Akış</div>
+        <div onclick="sekmeAc('ogrenci-liste')" id="m-ogrenci-liste" class="menu-item">👥 Öğrenci Listesi</div>
+        <div onclick="sekmeAc('personel-durum')" id="m-personel-durum" class="menu-item">👨‍🏫 Personel & Öğretmen</div>
+        <div onclick="sekmeAc('etut')" id="m-etut" class="menu-item">📚 Etüt Yoklaması</div>
+        <div onclick="sekmeAc('belletmen')" id="m-belletmen" class="menu-item">👮 Nöbetçi Listesi</div>
+        <div onclick="sekmeAc('yemekhane')" id="m-yemekhane" class="menu-item">🍴 Yemekhane Takibi</div>
+        <div onclick="sekmeAc('izinler')" id="m-izinler" class="menu-item">📝 İzin Talepleri <span
+                id="talepSayisi"></span></div>
+        <div onclick="sekmeAc('kayit')" id="m-kayit" class="menu-item">🔐 Kayıt İzinleri</div>
+        <div onclick="sekmeAc('turnikeSim')" id="m-turnikeSim" class="menu-item" style="color: #f1c40f;">🚀 Turnike
+            Simülatörü</div>
+        <div onclick="sekmeAc('adminAyarlarView')" id="m-adminAyarlarView" class="menu-item">⚙️ Ayarlar</div>
+        <div onclick="cikisYap()" class="menu-item" style="margin-top: auto; background: #c0392b;">🚪 Çıkış Yap</div>
+    </div>
+
+    <div class="main-content" id="mainWrapper">
+
+        <div id="dashboard" class="view-section active">
+            <div class="card">
+                <h2>🕒 Canlı Hareket Kayıtları</h2>
+                <div id="hareketListesi"></div>
+            </div>
+        </div>
+
+        <div id="ogrenci-liste" class="view-section">
+            <div class="card">
+                <h2>👥 Kayıtlı Öğrenci Durumları</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad / Kart ID</th>
+                            <th>Bilgi</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ogrenciTablosu"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="personel-durum" class="view-section">
+            <div class="card">
+                <h2>👨‍🏫 Personel & Öğretmen Takibi</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>Görev</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personelTablosu"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="etut" class="view-section">
+            <div class="card">
+                <h2>📚 Akşam Etüdü Listesi <button class="btn btn-red" style="float:right"
+                        onclick="etutSifirla()">Sıfırla</button></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Ad Soyad</th>
+                            <th>Sınıf</th>
+                            <th>Yoklama</th>
+                        </tr>
+                    </thead>
+                    <tbody id="etutTablosu"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="belletmen" class="view-section">
+            <div class="card">
+                <h2>👮 Haftalık Nöbetçi Öğretmen Listesi</h2>
+                <p>Nöbetçi bilgilerini kutucuklara yazıp kaydedin.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Gün</th>
+                            <th>Erkek Pansiyon</th>
+                            <th>Kız Pansiyon</th>
+                        </tr>
+                    </thead>
+                    <tbody id="belletmenBody"></tbody>
+                </table>
+                <button class="btn btn-onay" style="margin-top:15px; width:100%" onclick="belletmenKaydet()">💾 Listeyi
+                    Kaydet</button>
+            </div>
+        </div>
+
+        <div id="yemekhane" class="view-section">
+            <div class="card">
+                <h2>🍴 Yemekhane Takibi <button class="btn btn-red" style="float:right"
+                        onclick="yemekhaneSifirla()">Listeyi Sıfırla</button></h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Ad Soyad</th>
+                            <th>Giriş Saati</th>
+                            <th>Çıkış Saati</th>
+                        </tr>
+                    </thead>
+                    <tbody id="yemekhaneTabloGövdesi"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="izinler" class="view-section">
+            <div class="card">
+                <h2>⏳ Onay Bekleyen İzinler</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Öğrenci</th>
+                            <th>Tür</th>
+                            <th>Tarih</th>
+                            <th>Açıklama</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="talepTablosu"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="kayit" class="view-section">
+            <div class="card">
+                <h2>🔐 Ön Kayıt / Yetkilendirme</h2>
+                <div style="background:#f8f9fa; padding:20px; border-radius:8px; margin-bottom:20px;">
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items: flex-end;">
+                        <div>
+                            <label style="display:block; font-size:12px; font-weight:bold;">Kategori</label>
+                            <select id="yeniOgrenciTip" onchange="kayitAlanlariniDuzenle()">
+                                <option value="YURTÇU">Yurtçu Öğrenci</option>
+                                <option value="EVCİ">Evci Öğrenci</option>
+                                <option value="ÖĞRETMEN">Öğretmen</option>
+                                <option value="PERSONEL">Personel</option>
+                            </select>
+                        </div>
+                        <div id="alan-no">
+                            <label style="display:block; font-size:12px; font-weight:bold;">No</label>
+                            <input type="text" id="yeniOgrenciNo" placeholder="No" style="width:80px;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:12px; font-weight:bold;">Ad Soyad</label>
+                            <input type="text" id="yeniOgrenciAd" placeholder="Ad Soyad">
+                        </div>
+                        <div id="alan-sinif">
+                            <label style="display:block; font-size:12px; font-weight:bold;">Sınıf</label>
+                            <input type="text" id="yeniOgrenciSinif" placeholder="12-A" style="width:80px;">
+                        </div>
+                        <div id="alan-oda">
+                            <label style="display:block; font-size:12px; font-weight:bold;">Oda No</label>
+                            <input type="text" id="yeniOgrenciOda" placeholder="201" style="width:80px;">
+                        </div>
+                        <div id="alan-kart">
+                            <label style="display:block; font-size:12px; font-weight:bold;">Kart ID (UID)</label>
+                            <input type="text" id="yeniKartId" placeholder="Örn: 04:A2:F1:BB">
+                        </div>
+                        <button class="btn btn-onay" onclick="izinliNumaraEkle()">+ Ekle</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Ad Soyad</th>
+                            <th>Kart ID</th>
+                            <th>Kategori</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody id="izinliNumaralarTablosu"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="adminAyarlarView" class="view-section">
+            <div class="card">
+                <h2>⚙️ Admin Giriş Bilgilerini Güncelle</h2>
+                <div style="display:flex; flex-direction:column; gap:10px; max-width:300px;">
+                    <input type="text" id="yeniAdminUser" placeholder="Yeni Kullanıcı Adı">
+                    <input type="password" id="yeniAdminPass" placeholder="Yeni Şifre">
+                    <button class="btn btn-onay" onclick="adminBilgiGuncelle()">💾 Bilgileri Güncelle</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="turnikeSim" class="view-section">
+            <div class="card" style="border: 2px solid #f1c40f;">
+                <h2>🚀 Turnike Simülatörü</h2>
+                <input type="text" id="testKartId" placeholder="Kart ID Girin" style="width:250px;">
+                <select id="testKapiKodu">
+                    <option value="ANA_GIRIS">🏢 Okul Girişi</option>
+                    <option value="YURT_KAPI">🛌 Yurt Kapısı</option>
+                    <option value="YEMEKHANE_GIRIS">🍴 Yemekhane Giriş</option>
+                </select>
+                <button onclick="sanalKartOkut()" class="btn" style="background:#f1c40f; color:#000;">KART OKUT</button>
+                <div id="simulasyonSonuc" style="margin-top:15px; font-weight:bold;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminLoginScreen">
+        <div class="login-box">
+            <h2>Yurt Yönetim Paneli</h2>
+            <input type="text" id="adminUser" placeholder="Kullanıcı Adı" style="width:100%; margin-bottom:15px;">
+            <input type="password" id="adminPass" placeholder="Şifre" style="width:100%; margin-bottom:15px;">
+            <button onclick="adminGirisYap()" class="btn btn-onay" style="width:100%;">Giriş Yap</button>
+            <p id="loginHata" style="color:red; margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <script src="app.js" defer></script>
+</body>
+
+</html>
