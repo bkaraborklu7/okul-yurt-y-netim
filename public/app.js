@@ -24,6 +24,7 @@ function tarihiBugunYap() {
     const picker = document.getElementById("etutTarihSecici");
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD formatı
     picker.value = today;
+    alert("Tarih bugüne ayarlandı.");
     loadEtutLog();
 }
 // Bugünün tarihini DD.MM.YYYY formatında döndürür
@@ -213,14 +214,16 @@ async function loadCafeteriaLog() {
  */
 async function loadEtutLog() {
     const records = await apiRequest('etut-listesi');
-    if (!records) return;
+    if (!records) {
+        alert("Veriler yüklenirken bir hata oluştu.");
+        return;
+    }
 
     // Tarih seçiciden değeri al (YYYY-MM-DD gelir)
     const secilenTarihRaw = document.getElementById("etutTarihSecici").value;
 
-    // Eğer tarih seçilmediyse bugünü kullan
     if (!secilenTarihRaw) {
-        tarihiBugunYap();
+        alert("⚠️ Lütfen bir tarih seçin!");
         return;
     }
 
@@ -242,6 +245,9 @@ async function loadEtutLog() {
 
     document.getElementById("etutLogGövdesi").innerHTML =
         html || `<tr><td colspan="4" style="text-align:center;">${formatliTarih} tarihinde kayıt bulunamadı.</td></tr>`;
+    if (filtrelenmisKayitlar.length > 0) {
+        console.log(`${formatliTarih} verileri listelendi.`);
+    }
 }
 
 /**
