@@ -190,24 +190,41 @@ async function loadActivityLog() {
 }
 
 async function loadCafeteriaLog() {
+    const tarihKutusu = document.getElementById("yemekTarihSecici");
+    const tabloGovdesi = document.getElementById("yemekhaneTabloGövdesi");
+
+    if (!tarihKutusu || !tabloGovdesi || !tarihKutusu.value) return;
+
+    // Backend'den yemekhane listesini çek (backend'de bu endpoint olmalı)
     const records = await apiRequest('yemekhane-listesi');
     if (!records) return;
 
-    const bugun = getBugun();
-    // Veritabanındaki tarihler ile bugünü kıyasla
-    const bugunkuKayitlar = records.filter(y => y.tarih === bugun);
+    // Tarih formatla (2026-01-07 -> 07.01.2026)
+    const [y, m, d] = tarihKutusu.value.split('-');
+    const formatliTarih = `${d}.${m}.${y}`;
 
-    const html = bugunkuKayitlar.map(y => `
-        <tr>
-            <td>${y.tarih}</td>
-            <td>${y.isim}</td>
-            <td>${y.girisSaati}</td>
-            <td>${y.cikisSaati || '-'}</td>
-        </tr>
-    `).join('');
+    const filtrelenmis = records.filter(e => e.tarih === formatliTarih);
 
-    document.getElementById("yemekhaneTabloGövdesi").innerHTML =
-        html || '<tr><td colspan="4" style="text-align:center;">Bugün henüz yemekhane girişi yok.</td></tr>';
+    if (filtrelenmis.length > 0) {
+        tabloGovdesi.innerHTML = filtrelenmis.map(e => `
+            <tr>
+                <td>${e.tarih}</td>
+                <td>${e.ad}</td>
+                <td>${e.saat}</td>
+            </tr>
+        `).join('');
+    } else {
+        tabloGovdesi.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">🚫 ${formatliTarih} tarihinde yemek kaydı bulunamadı.</td></tr>`;
+    }
+}
+
+function yemekTarihiBugunYap() {
+    const today = new Date().toISOString().split('T')[0];
+    const kutu = document.getElementById("yemekTarihSecici");
+    if (kutu) {
+        kutu.value = today;
+        loadYemekLog();
+    }
 }
 /**
  * Etüt Giriş Kayıtlarını (Loglarını) Getirir

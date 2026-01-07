@@ -137,16 +137,29 @@
             <div class="card">
                 <h2>🍴 Yemekhane Takibi <button class="btn btn-red" style="float:right"
                         onclick="yemekhaneSifirla()">Listeyi Sıfırla</button></h2>
+
+                <div
+                    style="margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-radius: 8px; border-left: 4px solid #f39c12;">
+                    <label for="yemekTarihSecici"><b>Tarih Seçin:</b></label>
+                    <input type="date" id="yemekTarihSecici"
+                        style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                    <button onclick="loadYemekLog()"
+                        style="padding: 6px 12px; background: #f39c12; color: white; border: none; border-radius: 4px; cursor: pointer;">Sorgula</button>
+                    <button onclick="yemekTarihiBugunYap()"
+                        style="padding: 6px 12px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Bugüne
+                        Dön</button>
+                </div>
+
                 <table>
                     <thead>
                         <tr>
                             <th>Tarih</th>
                             <th>Ad Soyad</th>
-                            <th>Giriş Saati</th>
-                            <th>Çıkış Saati</th>
+                            <th>Öğün / Giriş Saati</th>
                         </tr>
                     </thead>
-                    <tbody id="yemekhaneTabloGövdesi"></tbody>
+                    <tbody id="yemekhaneTabloGövdesi">
+                    </tbody>
                 </table>
             </div>
         </div>
