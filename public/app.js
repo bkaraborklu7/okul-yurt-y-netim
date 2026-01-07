@@ -219,11 +219,16 @@ async function loadActivityLog() {
 }
 
 async function loadCafeteriaLog() {
+    console.log("Sorgula butonuna basıldı, fonksiyon çalışıyor...");
     const tarihKutusu = document.getElementById("yemekTarihSecici");
     const tabloGovdesi = document.getElementById("yemekhaneTabloGovdesi");
 
+
     // Güvenlik kontrolü
-    if (!tarihKutusu?.value || !tabloGovdesi) return;
+    if (!tarihKutusu?.value || !tabloGovdesi) {
+        console.error("Hata: Input veya Tablo bulunamadı!");
+        return;
+    }
 
     const records = await apiRequest('yemekhane-listesi');
     if (!records) return;
