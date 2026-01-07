@@ -77,7 +77,7 @@ function sekmeAc(id) {
     // Sekmeye özel veri çekme işlemleri
     if (id === 'belletmen') belletmenleriGetir();
     if (id === 'kayit') kayitIzinleriniGetir();
-    if (id === 'izinler') izinTalepleriniYükle();
+    if (id === 'izinler') izinTalepleriniYukle();
 
     verileriYenile();
 }
@@ -260,7 +260,7 @@ async function izinTalepleriniYukle() {
         const row = tablo.insertRow();
 
         // Badge rengini belirle
-        const badgeClass = t.durum === 'BEKLIYOR' ? 'badge-orange' : (t.durum === 'ONAYLANDI' ? 'badge-green' : 'badge-red');
+        const badgeClass = t.durum === 'BEKLIYOR' ? 'badge-İzinli' : (t.durum === 'ONAYLANDI' ? 'yurtta' : 'disarida');
 
         row.innerHTML = `
             <td>${t.isim}</td>
