@@ -221,7 +221,7 @@ async function loadActivityLog() {
 async function loadCafeteriaLog() {
     console.log("Sorgula butonuna basıldı, fonksiyon çalışıyor...");
     const tarihKutusu = document.getElementById("yemekTarihSecici");
-    const tabloGovdesi = document.getElementById("yemekhaneTabloGovdesi");
+    const tabloGovdesi = document.getElementById("yemekhaneTabloGövdesi");
 
 
     // Güvenlik kontrolü
