@@ -223,10 +223,7 @@ async function loadEtutLog() {
 
     const secilenTarihRaw = tarihKutusu.value;
 
-    // HATA BURADAYDI: alert yerine sessizce return yapıyoruz
     if (!secilenTarihRaw) {
-        // Tabloya küçük bir not bırak ama ekrana uyarı fırlatma
-        tabloGovdesi.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">Lütfen tarih seçip Sorgula'ya basın.</td></tr>`;
         return;
     }
 
