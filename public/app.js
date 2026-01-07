@@ -214,39 +214,34 @@ async function loadCafeteriaLog() {
  */
 // Etüt kayıtlarını geçmişe dönük sorgulama fonksiyonu
 async function loadEtutLog() {
-    console.log("Etüt sorgulama başlatıldı...");
-
-    // HTML'deki kutudan tarihi al
+    // 1. HTML elemanlarını kontrol et
     const tarihKutusu = document.getElementById("etutTarihSecici");
-    const tabloGovdesi = document.getElementById("etutLogGövdesi"); // HTML'deki 'ö' harfine dikkat
+    const tabloGovdesi = document.getElementById("etutLogGövdesi");
 
-    if (!tarihKutusu || !tabloGovdesi) {
-        console.error("HTML elemanları bulunamadı! ID'leri kontrol edin.");
-        return;
-    }
+    // Eğer bu elemanlar o an ekranda yoksa (başka sayfadaysan) fonksiyonu durdur
+    if (!tarihKutusu || !tabloGovdesi) return;
 
-    const secilenTarihRaw = tarihKutusu.value; // Örn: 2024-01-07
+    const secilenTarihRaw = tarihKutusu.value;
+
+    // HATA BURADAYDI: alert yerine sessizce return yapıyoruz
     if (!secilenTarihRaw) {
-        alert("Lütfen bir tarih seçin!");
+        // Tabloya küçük bir not bırak ama ekrana uyarı fırlatma
+        tabloGovdesi.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">Lütfen tarih seçip Sorgula'ya basın.</td></tr>`;
         return;
     }
-
-    // Tarihi backend formatına çevir (2024-01-07 -> 07.01.2024)
-    const [y, m, d] = secilenTarihRaw.split('-');
-    const formatliTarih = `${d}.${m}.${y}`;
 
     // Backend'den verileri çek
     const records = await apiRequest('etut-listesi');
+    if (!records) return;
 
-    if (!records) {
-        tabloGovdesi.innerHTML = `<tr><td colspan="4" style="text-align:center; color:orange;">Veri alınamadı veya liste boş.</td></tr>`;
-        return;
-    }
+    // Tarih formatlama (2024-01-07 -> 07.01.2024)
+    const [y, m, d] = secilenTarihRaw.split('-');
+    const formatliTarih = `${d}.${m}.${y}`;
 
-    // Seçilen tarihe göre filtrele
+    // Filtreleme
     const filtrelenmis = records.filter(e => e.tarih === formatliTarih);
 
-    // Tabloyu oluştur
+    // Tabloyu doldur
     if (filtrelenmis.length > 0) {
         tabloGovdesi.innerHTML = filtrelenmis.map(e => `
             <tr>
