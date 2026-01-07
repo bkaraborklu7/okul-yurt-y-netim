@@ -415,7 +415,7 @@ async function izinIslem(id, islem) {
     if (!confirm('Bu izin talebi üzerinde işlem yapmak istediğinize emin misiniz?')) return;
 
     // Backend'e onay veya red gönderiyoruz
-    const sonuc = await apiRequest('izin-onay', 'POST', { id, islem });
+    const sonuc = await apiRequest('izin-onay', 'POST', { "id": id, "islem": islem });
 
     if (sonuc && sonuc.basarili) {
         alert('İşlem başarıyla kaydedildi.');
