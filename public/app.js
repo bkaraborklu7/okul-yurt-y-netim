@@ -167,7 +167,7 @@ async function verileriYenile() {
 /**
  * Ek Listeleri Yükleyen Fonksiyonlar
  */
-async function loadGecmisActivityLog() {
+async function loadGecmisHareketler() {
     const tarihKutusu = document.getElementById("hareketTarihSecici");
     const listeDiv = document.getElementById("gecmisHareketListesi");
 
