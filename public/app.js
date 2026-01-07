@@ -167,10 +167,53 @@ async function verileriYenile() {
 /**
  * Ek Listeleri Yükleyen Fonksiyonlar
  */
+async function loadGecmisActivityLog() {
+    const tarihKutusu = document.getElementById("hareketTarihSecici");
+    const listeDiv = document.getElementById("gecmisHareketListesi");
+
+    if (!tarihKutusu || !tarihKutusu.value) {
+        return; // Sessizce çık, hata verme (alert istemiyorduk)
+    }
+
+    const logs = await apiRequest('hareketler');
+    if (!logs) return;
+
+    // Tarih formatla (2026-01-07 -> 07.01.2026)
+    const [y, m, d] = tarihKutusu.value.split('-');
+    const secilenTarih = `${d}.${m}.${y}`;
+
+    // Seçilen tarihe göre filtrele
+    const filtrelenmis = logs.filter(h => h.zaman && h.zaman.includes(secilenTarih));
+
+    const html = filtrelenmis.reverse().map(h => `
+        <div style="padding:10px; border-bottom:1px solid #eee;">
+            🕒 ${h.zaman} - <b>${h.isim}</b>: ${h.mesaj}
+        </div>
+    `).join('') || `<div style="padding:10px; color:red;">🚫 ${secilenTarih} tarihinde kayıt bulunamadı.</div>`;
+
+    listeDiv.innerHTML = html;
+}
 async function loadActivityLog() {
     const logs = await apiRequest('hareketler');
     if (!logs) return;
-    const html = logs.slice(0, 15).map(h => `<div style="padding:10px; border-bottom:1px solid #eee;">🕒 ${h.zaman} - <b>${h.isim}</b>: ${h.mesaj}</div>`).join('');
+
+    // Bugünün tarihini al (Format: 07.01.2026)
+    const today = new Date().toLocaleDateString('tr-TR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+
+    // Sadece BUGÜNÜN loglarını filtrele
+    const bugunLoglari = logs.filter(h => h.zaman && h.zaman.includes(today));
+
+    // En yeni 15 tanesini al ve ekrana bas (reverse ile en yeni en üstte)
+    const html = bugunLoglari.slice(-15).reverse().map(h => `
+        <div style="padding:10px; border-bottom:1px solid #eee;">
+            🕒 ${h.zaman} - <b>${h.isim}</b>: ${h.mesaj}
+        </div>
+    `).join('') || `<div style="padding:10px; color:gray;">Bugün henüz bir hareket kaydedilmedi.</div>`;
+
     document.getElementById("hareketListesi").innerHTML = html;
 }
 

@@ -13,6 +13,8 @@
     <div id="sidebar">
         <div class="sidebar-header">🏫 YURT PANELİ</div>
         <div onclick="sekmeAc('dashboard')" id="m-dashboard" class="menu-item active">📊 Canlı Akış</div>
+        <div onclick="sekmeAc('gecmis-hareketler')" id="m-gecmis-hareketler" class="menu-item">📜 Geçmiş Hareketler
+        </div>
         <div onclick="sekmeAc('ogrenci-liste')" id="m-ogrenci-liste" class="menu-item">👥 Öğrenci Listesi</div>
         <div onclick="sekmeAc('personel-durum')" id="m-personel-durum" class="menu-item">👨‍🏫 Personel & Öğretmen</div>
         <div onclick="sekmeAc('etut')" id="m-etut" class="menu-item">📚 Etüt Yoklaması</div>
@@ -33,6 +35,22 @@
             <div class="card">
                 <h2>🕒 Canlı Hareket Kayıtları</h2>
                 <div id="hareketListesi"></div>
+            </div>
+        </div>
+        <div id="gecmis-hareketler" class="view-section">
+            <div class="card">
+                <h2>📜 Geçmiş Hareket Sorgulama</h2>
+                <div
+                    style="margin-bottom: 15px; background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #34495e;">
+                    <label for="hareketTarihSecici"><b>Tarih Seçin:</b></label>
+                    <input type="date" id="hareketTarihSecici"
+                        style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                    <button onclick="loadGecmisHareketler()"
+                        style="padding: 6px 12px; background: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer;">Sorgula</button>
+                </div>
+
+                <div id="gecmisHareketListesi">
+                </div>
             </div>
         </div>
 
