@@ -1,185 +1,3 @@
-// const API_URL = "https://residential-aila-okul-yurt-backend-ebf598e1.koyeb.app";
-
-// // GİRİŞ FONKSİYONU
-// async function adminGirisYap() {
-//     const kullaniciAdi = document.getElementById('adminUser').value;
-//     const sifre = document.getElementById('adminPass').value;
-//     try {
-//         const res = await fetch(`${API_URL}/admin-login`, {
-//             method: 'POST', headers: { 'Content-Type': 'application/json' },
-//             body: JSON.stringify({ kullaniciAdi, sifre })
-//         });
-//         const data = await res.json();
-//         if (data.basarili) {
-//             document.getElementById('adminLoginScreen').style.display = 'none';
-//             document.getElementById('sidebar').style.display = 'flex';
-//             document.getElementById('mainWrapper').style.display = 'block';
-//             sessionStorage.setItem('adminAuth', 'true');
-//             verileriYenile();
-//             belletmenleriGetir();
-//             kayitAlanlariniDuzenle();
-//         } else { document.getElementById('loginHata').innerText = "Hatalı Giriş!"; }
-//     } catch (e) { document.getElementById('loginHata').innerText = "Sunucu Hatası!"; }
-// }
-
-// // SEKME YÖNETİMİ
-// function sekmeAc(id) {
-//     document.querySelectorAll('.view-section').forEach(d => d.classList.remove('active'));
-//     document.querySelectorAll('.menu-item').forEach(b => b.classList.remove('active'));
-//     const targetSection = document.getElementById(id) || document.getElementById('adminAyarlarView');
-//     if (targetSection) targetSection.classList.add('active');
-//     document.getElementById('m-' + id).classList.add('active');
-
-//     if (id === 'belletmen') belletmenleriGetir();
-//     if (id === 'kayit') kayitIzinleriniGetir();
-//     verileriYenile();
-// }
-
-// // KAYIT ALANLARINI DÜZENLE (DİNAMİK FORM)
-// function kayitAlanlariniDuzenle() {
-//     const tip = document.getElementById("yeniOgrenciTip").value;
-//     const alanSinif = document.getElementById("alan-sinif");
-//     const alanOda = document.getElementById("alan-oda");
-//     const alanNo = document.getElementById("alan-no");
-
-//     if (tip === "YURTÇU") {
-//         alanSinif.style.display = "block";
-//         alanOda.style.display = "block";
-//     } else if (tip === "EVCİ") {
-//         alanSinif.style.display = "block";
-//         alanOda.style.display = "none";
-//     } else { // Personel veya Öğretmen
-//         alanNo.style.display = "none";
-//         alanSinif.style.display = "none";
-//         alanOda.style.display = "none";
-//     }
-// }
-
-// // NÖBETÇİ LİSTESİ HÜCRELERİNİ AÇMA
-// async function belletmenleriGetir() {
-//     try {
-//         const res = await fetch(`${API_URL}/belletmenler`);
-//         let liste = await res.json();
-//         if (!liste || liste.length === 0) {
-//             liste = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"].map(g => ({ gun: g, erkek: "", kiz: "" }));
-//         }
-//         let html = "";
-//         liste.forEach((b, i) => {
-//             html += `<tr><td><b>${b.gun}</b></td>
-//                         <td><input type="text" id="erkek-${i}" value="${b.erkek || ''}" style="width:95%"></td>
-//                         <td><input type="text" id="kiz-${i}" value="${b.kiz || ''}" style="width:95%"></td></tr>`;
-//         });
-//         document.getElementById("belletmenBody").innerHTML = html;
-//     } catch (e) { console.error(e); }
-// }
-
-// async function belletmenKaydet() {
-//     const nl = [];
-//     const gs = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
-//     for (let i = 0; i < 7; i++) {
-//         nl.push({
-//             gun: gs[i],
-//             erkek: document.getElementById(`erkek-${i}`).value,
-//             kiz: document.getElementById(`kiz-${i}`).value
-//         });
-//     }
-//     await fetch(`${API_URL}/belletmen-guncelle`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(nl) });
-//     alert("✅ Nöbetçi listesi kaydedildi!");
-// }
-
-// async function verileriYenile() {
-//     try {
-//         const res = await fetch(`${API_URL}/ogrenciler`);
-//         const all = await res.json();
-//         let hOgr = "", hPers = "", hEtut = "";
-
-//         all.forEach(o => {
-//             const badge = `<span class="badge ${o.durum === 'YURTTA' ? 'yurtta' : (o.durum === 'IZINLI' ? 'izinli' : 'disarida')}">${o.durum}</span>`;
-//             if (o.tip === "ÖĞRETMEN" || o.tip === "PERSONEL") {
-//                 hPers += `<tr><td><b>${o.ad}</b><br><small>ID: ${o.kartId}</small></td><td>${o.tip}</td><td>${badge}</td></tr>`;
-//             } else {
-//                 hOgr += `<tr><td><b>${o.ad}</b><br><small>ID: ${o.kartId}</small></td><td>${o.sinif}/${o.oda}</td><td>${badge}</td></tr>`;
-//                 if (o.tip === "YURTÇU") {
-//                     hEtut += `<tr><td>${o.ogrenciNo}</td><td>${o.ad}</td><td>${o.sinif}</td><td>${o.etutDurumu === 'VAR' ? '✅' : '❌'}</td></tr>`;
-//                 }
-//             }
-//         });
-//         document.getElementById("ogrenciTablosu").innerHTML = hOgr;
-//         document.getElementById("personelTablosu").innerHTML = hPers;
-//         document.getElementById("etutTablosu").innerHTML = hEtut;
-
-//         const resHar = await fetch(`${API_URL}/hareketler`);
-//         const harks = await resHar.json();
-//         let htmlHar = "";
-//         harks.slice(0, 15).forEach(h => {
-//             htmlHar += `<div style="padding:10px; border-bottom:1px solid #eee;">🕒 ${h.zaman} - <b>${h.isim}</b>: ${h.mesaj}</div>`;
-//         });
-//         document.getElementById("hareketListesi").innerHTML = htmlHar;
-
-//         const resYem = await fetch(`${API_URL}/yemekhane-listesi`);
-//         const yem = await resYem.json();
-//         let htmlYem = "";
-//         yem.forEach(y => {
-//             htmlYem += `<tr><td>${y.tarih}</td><td>${y.isim}</td><td>${y.girisSaati}</td><td>${y.cikisSaati}</td></tr>`;
-//         });
-//         document.getElementById("yemekhaneTabloGövdesi").innerHTML = htmlYem;
-//     } catch (e) { console.log(e); }
-// }
-
-// async function kayitIzinleriniGetir() {
-//     const res = await fetch(`${API_URL}/izinli-numaralar`);
-//     const nums = await res.json();
-//     let h = "";
-//     nums.forEach(n => {
-//         h += `<tr><td>${n.numara}</td><td>${n.ad}</td><td>${n.kartId}</td><td>${n.tip}</td><td><button class="btn btn-red" onclick="izinliNumaraSil('${n.id}')">Sil</button></td></tr>`;
-//     });
-//     document.getElementById("izinliNumaralarTablosu").innerHTML = h;
-// }
-
-// async function izinliNumaraEkle() {
-//     const body = {
-//         numara: document.getElementById("yeniOgrenciNo").value,
-//         ad: document.getElementById("yeniOgrenciAd").value,
-//         kartId: document.getElementById("yeniKartId").value,
-//         tip: document.getElementById("yeniOgrenciTip").value,
-//         sinif: document.getElementById("yeniOgrenciSinif").value || "-",
-//         oda: document.getElementById("yeniOgrenciOda").value || "-"
-//     };
-//     await fetch(`${API_URL}/izinli-numara-ekle`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-//     kayitIzinleriniGetir();
-//     alert("✅ Kayıt yetkisi verildi!");
-// }
-
-// async function adminBilgiGuncelle() {
-//     const u = document.getElementById("yeniAdminUser").value;
-//     const p = document.getElementById("yeniAdminPass").value;
-//     if (!u || !p) return alert("Lütfen alanları doldurun!");
-//     await fetch(`${API_URL}/admin-sifre-guncelle`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ yeniKullaniciAdi: u, yeniSifre: p }) });
-//     alert("✅ Admin bilgileri güncellendi! Lütfen yeniden giriş yapın.");
-//     cikisYap();
-// }
-
-// async function sanalKartOkut() {
-//     const kartId = document.getElementById("testKartId").value;
-//     const kapiKodu = document.getElementById("testKapiKodu").value;
-//     const endpoint = kapiKodu.includes("YEMEKHANE") ? "/yemekhane-kart" : "/yoklama-kart";
-//     const res = await fetch(`${API_URL}${endpoint}`, {
-//         method: "POST", headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ kartId, kapiKodu })
-//     });
-//     const data = await res.json();
-//     document.getElementById("simulasyonSonuc").innerText = data.mesaj;
-//     verileriYenile();
-// }
-
-// function cikisYap() { sessionStorage.clear(); location.reload(); }
-// setInterval(verileriYenile, 5000);
-
-
-
-/**
- * Yurt Yönetim Paneli - Optimize Edilmiş app.js
- */
 "use strict";
 
 const API_URL = "https://residential-aila-okul-yurt-backend-ebf598e1.koyeb.app";
@@ -201,6 +19,8 @@ const apiRequest = async (endpoint, options = {}) => {
         return null;
     }
 };
+// Bugünün tarihini DD.MM.YYYY formatında döndürür
+const getBugun = () => new Date().toLocaleDateString('tr-TR');
 
 // --- ANA FONKSİYONLAR ---
 
@@ -268,6 +88,35 @@ function kayitAlanlariniDuzenle() {
 }
 
 /**
+ * Etüt Verilerini Sıfırla
+ */
+async function etutSifirla() {
+    if (confirm("Tüm etüt yoklamasını sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz!")) {
+        const res = await apiRequest('etut-sifirla', { method: 'POST' });
+        if (res) {
+            alert("✅ Etüt listesi başarıyla sıfırlandı.");
+            verileriYenile(); // Tabloyu güncelle
+        } else {
+            alert("❌ Sıfırlama işlemi başarısız oldu.");
+        }
+    }
+}
+
+/**
+ * Yemekhane Takip Listesini Sıfırla
+ */
+async function yemekhaneSifirla() {
+    if (confirm("Yemekhane giriş listesini temizlemek üzeresiniz. Onaylıyor musunuz?")) {
+        const res = await apiRequest('yemekhane-sifirla', { method: 'POST' });
+        if (res) {
+            alert("✅ Yemekhane listesi temizlendi.");
+            loadCafeteriaLog(); // Tabloyu güncelle
+        } else {
+            alert("❌ İşlem sırasında bir hata oluştu.");
+        }
+    }
+}
+/**
  * Nöbetçi Listesi Getirme ve Tabloyu İnşa Etme
  */
 async function belletmenleriGetir() {
@@ -319,6 +168,7 @@ async function verileriYenile() {
     // Diğer listeleri yükle (Sessizce)
     loadActivityLog();
     loadCafeteriaLog();
+    loadEtutLog();
 }
 
 /**
@@ -334,8 +184,50 @@ async function loadActivityLog() {
 async function loadCafeteriaLog() {
     const records = await apiRequest('yemekhane-listesi');
     if (!records) return;
-    const html = records.map(y => `<tr><td>${y.tarih}</td><td>${y.isim}</td><td>${y.girisSaati}</td><td>${y.cikisSaati}</td></tr>`).join('');
-    document.getElementById("yemekhaneTabloGövdesi").innerHTML = html;
+
+    const bugun = getBugun();
+    // Veritabanındaki tarihler ile bugünü kıyasla
+    const bugunkuKayitlar = records.filter(y => y.tarih === bugun);
+
+    const html = bugunkuKayitlar.map(y => `
+        <tr>
+            <td>${y.tarih}</td>
+            <td>${y.isim}</td>
+            <td>${y.girisSaati}</td>
+            <td>${y.cikisSaati || '-'}</td>
+        </tr>
+    `).join('');
+
+    document.getElementById("yemekhaneTabloGövdesi").innerHTML =
+        html || '<tr><td colspan="4" style="text-align:center;">Bugün henüz yemekhane girişi yok.</td></tr>';
+}
+/**
+ * Etüt Giriş Kayıtlarını (Loglarını) Getirir
+ */
+async function loadEtutLog() {
+    // Backend'de yemekhane-listesi gibi bir etut-listesi endpoint'i olduğunu varsayıyoruz
+    const records = await apiRequest('etut-listesi');
+    if (!records) return;
+
+    const bugun = getBugun(); // Daha önce eklediğimiz tarih fonksiyonu
+
+    // Sadece bugünkü etüt girişlerini filtrele
+    const bugunkuKayitlar = records.filter(e => e.tarih === bugun);
+
+    const html = bugunkuKayitlar.map(e => `
+        <tr>
+            <td>${e.tarih}</td>
+            <td>${e.ad}</td>
+            <td>${e.sinif}</td>
+            <td>${e.saat}</td>
+        </tr>
+    `).join('');
+
+    // Bu tabloyu index.html'de oluşturacağın bir ID'ye basacağız
+    const container = document.getElementById("etutLogGövdesi");
+    if (container) {
+        container.innerHTML = html || '<tr><td colspan="4" style="text-align:center;">Bugün henüz etüt girişi yok.</td></tr>';
+    }
 }
 
 /**
