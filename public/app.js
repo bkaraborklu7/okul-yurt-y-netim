@@ -414,8 +414,14 @@ async function izinliNumaraSil(id) {
 async function izinIslem(id, islem) {
     if (!confirm('Bu izin talebi üzerinde işlem yapmak istediğinize emin misiniz?')) return;
 
-    // Backend'e onay veya red gönderiyoruz
-    const sonuc = await apiRequest('izin-onay', 'POST', { "id": id, "islem": islem });
+    // Mevcut apiRequest yapısına uygun olarak (endpoint, options) şeklinde çağırıyoruz
+    const sonuc = await apiRequest('izin-onay', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: id, islem: islem })
+    });
 
     if (sonuc && sonuc.basarili) {
         alert('İşlem başarıyla kaydedildi.');
