@@ -304,7 +304,7 @@ async function izinTalepleriniYukle() {
         const parcalar = secilenTarih.split('-');
         const formatliTarih = `${parcalar[2]}.${parcalar[1]}.${parcalar[0]}`;
 
-        gosterilecekTalepler = talepler.filter(t => t.tarih === formatliTarih);
+        gosterilecekTalepler = talepler.filter(t => t.gonderilmeTarihi === formatliTarih);
     }
 
     // Orijinal reverse() ve listeleme işlevin devam ediyor
