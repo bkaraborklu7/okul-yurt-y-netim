@@ -186,6 +186,13 @@
         <div id="izinler" class="view-section">
             <div class="card">
                 <h2>⏳ Onay Bekleyen İzinler</h2>
+                <div class="filter-section">
+                    <label for="izinTarihFiltre">Tarihe Göre Sorgula:</label>
+                    <input type="date" id="izinTarihFiltre" onchange="izinTalepleriniYukle()">
+                    <button class="btn-s"
+                        onclick="document.getElementById('izinTarihFiltre').value=''; izinTalepleriniYukle();">Hepsini
+                        Gör</button>
+                </div>
                 <table>
                     <thead>
                         <tr>

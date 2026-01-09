@@ -290,14 +290,28 @@ function yemekTarihiBugunYap() {
 async function izinTalepleriniYukle() {
     const talepler = await apiRequest('izin-talepleri');
     const tablo = document.getElementById("izinTalepleriTablosu");
+    const filtreInput = document.getElementById("izinTarihFiltre");
+    const secilenTarih = filtreInput ? filtreInput.value : ""; // YYYY-MM-DD
+
     if (!talepler || !tablo) return;
 
     tablo.innerHTML = ""; // Önce temizle
 
-    talepler.reverse().forEach(t => {
+    // --- FİLTRELEME MANTIĞI ---
+    let gosterilecekTalepler = talepler;
+    if (secilenTarih) {
+        // HTML '2024-01-10' verir, biz onu '10.01.2024' formatına çeviriyoruz
+        const parcalar = secilenTarih.split('-');
+        const formatliTarih = `${parcalar[2]}.${parcalar[1]}.${parcalar[0]}`;
+
+        gosterilecekTalepler = talepler.filter(t => t.tarih === formatliTarih);
+    }
+
+    // Orijinal reverse() ve listeleme işlevin devam ediyor
+    gosterilecekTalepler.reverse().forEach(t => {
         const row = tablo.insertRow();
 
-        // Badge rengini belirle
+        // Badge rengini belirle (Mevcut mantığın)
         const badgeClass = t.durum === 'BEKLIYOR' ? 'badge-İzinli' : (t.durum === 'ONAYLANDI' ? 'yurtta' : 'disarida');
 
         row.innerHTML = `
@@ -312,12 +326,16 @@ async function izinTalepleriniYukle() {
                     <button class="btn-s" onclick="izinIslem('${t.id}', 'ONAY')">✅</button>
                     <button class="btn-s" onclick="izinIslem('${t.id}', 'RED')">❌</button>
                 </div>`
-                : '<span style="color: gray;">Tamamlandı</span>'}
+                : `<span style="color: gray;">${t.durum === 'ONAYLANDI' ? 'Onaylandı' : 'Reddedildi'}</span>`}
             </td>
         `;
     });
-}
 
+    // Eğer filtreleme sonucu kayıt yoksa kullanıcıya bilgi ver
+    if (gosterilecekTalepler.length === 0 && secilenTarih) {
+        tablo.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">Bu tarihe ait izin talebi bulunamadı.</td></tr>`;
+    }
+}
 /**
  * Etüt Giriş Kayıtlarını (Loglarını) Getirir
  */
