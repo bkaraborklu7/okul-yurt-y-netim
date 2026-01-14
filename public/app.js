@@ -113,14 +113,19 @@ async function etutSifirla() {
 /**
  * Nöbetçi Listesi Getirme ve Tabloyu İnşa Etme
  */
+/**
+ * Nöbetçi Listesini Backend'den Çeker ve Inputlara Doldurur
+ */
 async function belletmenleriGetir() {
     let liste = await apiRequest('belletmenler');
 
+    // Eğer veritabanı boşsa veya hata varsa varsayılan boş satırlar oluştur
     if (!liste || liste.length === 0) {
         const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
         liste = gunler.map(g => ({ gun: g, erkek: "", kiz: "" }));
     }
 
+    // HTML Tablosunu oluştur (Senin mevcut mantığın)
     const html = liste.map((b, i) => `
         <tr>
             <td><b>${b.gun}</b></td>
@@ -129,9 +134,9 @@ async function belletmenleriGetir() {
         </tr>
     `).join('');
 
-    document.getElementById("belletmenBody").innerHTML = html;
+    const body = document.getElementById("belletmenBody");
+    if (body) body.innerHTML = html;
 }
-
 /**
  * Tüm Verileri Yenileme (Dashboard, Öğrenci, Personel, Etüt, Hareketler, Yemekhane)
  */
@@ -422,11 +427,15 @@ async function belletmenKaydet() {
     const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
     let yeniListe = [];
 
+    // Her satırdaki inputun değerini ID üzerinden yakala
     for (let i = 0; i < gunler.length; i++) {
+        const erkekDeger = document.getElementById(`erkek-${i}`).value;
+        const kizDeger = document.getElementById(`kiz-${i}`).value;
+
         yeniListe.push({
             gun: gunler[i],
-            erkek: document.getElementById(`erkek-${i}`).value,
-            kiz: document.getElementById(`kiz-${i}`).value
+            erkek: erkekDeger,
+            kiz: kizDeger
         });
     }
 
@@ -437,11 +446,11 @@ async function belletmenKaydet() {
     });
 
     if (res?.basarili) {
-        alert("✅ Belletmen listesi başarıyla kaydedildi.");
-        // RAM'deki veriyi de güncellemek için listeyi tekrar çekebilirsin
+        alert("✅ Nöbetçi listesi güncellendi.");
+        // Listeyi tazele (Görsel onay için)
         belletmenleriGetir();
     } else {
-        alert("❌ Liste kaydedilemedi!");
+        alert("❌ Kayıt başarısız.");
     }
 }
 /**
