@@ -405,7 +405,7 @@ async function adminBilgiGuncelle() {
         return;
     }
 
-    const res = await apiRequest('admin-ayarlar-guncelle', {
+    const res = await apiRequest('admin-sifre-guncelle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ kullaniciAdi, sifre })
