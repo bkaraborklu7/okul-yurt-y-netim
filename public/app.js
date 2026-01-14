@@ -389,6 +389,62 @@ function tarihiBugunYap() {
     }
 }
 /**
+ * Admin Giriş Bilgilerini Güncelleme
+ */
+async function adminBilgiGuncelle() {
+    const kullaniciAdi = document.getElementById('yeniAdminUser').value;
+    const sifre = document.getElementById('yeniAdminPass').value;
+
+    if (!kullaniciAdi || !sifre) {
+        alert("Lütfen alanları boş bırakmayın!");
+        return;
+    }
+
+    const res = await apiRequest('admin-ayarlar-guncelle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kullaniciAdi, sifre })
+    });
+
+    if (res?.basarili) {
+        alert("✅ Admin bilgileri güncellendi.");
+        document.getElementById('yeniAdminUser').value = "";
+        document.getElementById('yeniAdminPass').value = "";
+    } else {
+        alert("❌ Güncelleme hatası!");
+    }
+}
+
+/**
+ * Belletmen Listesini Backend'e Gönderme
+ */
+async function belletmenKaydet() {
+    const gunler = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+    let yeniListe = [];
+
+    for (let i = 0; i < gunler.length; i++) {
+        yeniListe.push({
+            gun: gunler[i],
+            erkek: document.getElementById(`erkek-${i}`).value,
+            kiz: document.getElementById(`kiz-${i}`).value
+        });
+    }
+
+    const res = await apiRequest('belletmen-guncelle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(yeniListe)
+    });
+
+    if (res?.basarili) {
+        alert("✅ Belletmen listesi başarıyla kaydedildi.");
+        // RAM'deki veriyi de güncellemek için listeyi tekrar çekebilirsin
+        belletmenleriGetir();
+    } else {
+        alert("❌ Liste kaydedilemedi!");
+    }
+}
+/**
  * Kayıt ve Silme İşlemleri
  */
 async function kayitIzinleriniGetir() {
